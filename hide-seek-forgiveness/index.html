@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<script>/* naituan-preview 运行时保险：漏网的存储名也自动加 -preview 后缀；禁止注册 Service Worker */
+(function(){var X='-preview';function k(n){n=String(n);return n.indexOf(X)>=0?n:n+X;}
+try{var S=Storage.prototype,g=S.getItem,s=S.setItem,r=S.removeItem,kk=S.key;
+S.getItem=function(n){return g.call(this,k(n));};S.setItem=function(n,v){return s.call(this,k(n),v);};
+S.removeItem=function(n){return r.call(this,k(n));};
+S.clear=function(){for(var i=this.length-1;i>=0;i--){var n=kk.call(this,i);if(n&&n.indexOf(X)>=0)r.call(this,n);}};}catch(e){}
+try{if(window.indexedDB){var I=Object.getPrototypeOf(indexedDB),o=I.open,d=I.deleteDatabase;
+I.open=function(n,v){return v===undefined?o.call(this,k(n)):o.call(this,k(n),v);};I.deleteDatabase=function(n){return d.call(this,k(n));};}}catch(e){}
+try{if(window.caches){var C=Object.getPrototypeOf(caches);['open','delete','has'].forEach(function(m){var f=C[m];C[m]=function(n){return f.call(this,k(n));};});}}catch(e){}
+try{if(navigator.serviceWorker){navigator.serviceWorker.register=function(){return Promise.reject(new Error('预览版不注册 Service Worker'));};}}catch(e){}
+})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3ebde">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="奶团小屋·预览">
+<title>奶团小屋（预览版 · hide-seek-forgiveness）</title>
+<script src="stats.js?v=stats-20261003"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fonts load in the background: if Google Fonts is slow or blocked, the page still shows at once with system fonts. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+KuaiLe&display=swap" media="print" onload="this.media='all'">
+<link rel="preload" as="image" href="assets/peek.webp">
+<style>
+/* Splash: inline so it paints before anything else loads. splash.js takes over; if it never runs, the CSS fallback hides it after 12s. */
+.splash { position: fixed; inset: 0; z-index: 2147483000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  background: radial-gradient(circle at 50% 42%, #fffaf2 0, #f8f1e6 34%, #f3ebde 70%); color: #54392f; cursor: pointer; user-select: none; -webkit-user-select: none;
+  font-family: 'ZCOOL KuaiLe', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; transition: opacity .45s ease, transform .45s ease;
+  animation: splash-fallback 0s 12s forwards; -webkit-tap-highlight-color: transparent; }
+.splash.js { animation: none; }
+.splash:focus { outline: none; }
+.splash.leaving { opacity: 0; transform: scale(1.04); pointer-events: none; }
+.splash-cat { position: relative; width: min(46vw, 210px); aspect-ratio: 1; margin-bottom: 4px; }
+.splash-cat img { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: 50% 92%; transition: opacity .35s ease; }
+.splash-cat .peek { animation: splash-peek 1.8s ease-in-out infinite; }
+.splash-cat .hello { opacity: 0; }
+.splash.ready .splash-cat .peek { opacity: 0; animation: none; }
+.splash.ready .splash-cat .hello { opacity: 1; animation: splash-hop .6s cubic-bezier(.3,1.6,.5,1) both; }
+.splash.leaving .splash-cat .hello { animation: splash-jump .45s ease-in forwards; }
+.splash-title { margin: 0; font-size: 30px; font-weight: 400; letter-spacing: .08em; }
+.splash-paws { display: flex; gap: 10px; height: 22px; margin: 8px 0 2px; }
+.splash-paws svg { width: 18px; height: 18px; fill: #e7b48a; opacity: .18; animation: splash-step 1.2s ease-in-out infinite; }
+.splash-paws svg:nth-child(2) { animation-delay: .2s; transform: translateY(-5px) rotate(12deg); }
+.splash-paws svg:nth-child(3) { animation-delay: .4s; }
+.splash-paws svg:nth-child(4) { animation-delay: .6s; transform: translateY(-5px) rotate(12deg); }
+.splash.ready .splash-paws svg { animation: none; opacity: .85; }
+.splash-status { margin: 0; min-height: 1.4em; font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif; font-size: 14px; color: #8c6f63; letter-spacing: .04em; }
+.splash.ready .splash-status { color: #54392f; animation: splash-breathe 1.6s ease-in-out .5s infinite; }
+@keyframes splash-peek { 0%, 100% { transform: rotate(-3deg) translateX(-2%); } 50% { transform: rotate(3deg) translateX(2%); } }
+@keyframes splash-hop { 0% { transform: translateY(8%) scale(1.06, .9); } 45% { transform: translateY(-9%) scale(.96, 1.05); } 75% { transform: translateY(0) scale(1.04, .96); } 100% { transform: none; } }
+@keyframes splash-jump { 30% { transform: translateY(4%) scale(1.06, .92); } 100% { transform: translateY(-22%) scale(.96, 1.05); } }
+@keyframes splash-step { 0%, 100% { opacity: .18; } 35% { opacity: .9; } }
+@keyframes splash-breathe { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+@keyframes splash-fallback { to { visibility: hidden; pointer-events: none; } }
+@media (prefers-reduced-motion: reduce) { .splash-cat img, .splash-paws svg, .splash-status { animation: none !important; } .splash-paws svg { opacity: .6; } }
+</style>
+<link rel="stylesheet" href="style.css?v=acc-20261004">
+<link rel="stylesheet" href="decor-shop.css?v=cake-peach-20260929">
+<link rel="stylesheet" href="house.css?v=hints-20261004">
+<link rel="stylesheet" href="planner.css?v=immersive-20260929">
+<link rel="stylesheet" href="journal.css?v=journal-20261003">
+<link rel="stylesheet" href="photo-crop.css?v=crop-20261004">
+<link rel="stylesheet" href="lion.css?v=lion-20261004e">
+</head>
+<body>
+<div class="splash" id="splash" role="button" tabindex="0" aria-label="奶团小屋，正在加载">
+  <div class="splash-cat" aria-hidden="true"><img class="peek" src="assets/peek.webp" alt="" draggable="false"><img class="hello" src="assets/happy.webp" alt="" draggable="false"></div>
+  <p class="splash-title">奶团小屋</p>
+  <div class="splash-paws" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17c0-3 3-6 5-6s5 3 5 6c0 3-3 3-5 2-2 1-5 1-5-2Z"/><ellipse cx="5" cy="9" rx="2" ry="2.7"/><ellipse cx="10" cy="5.5" rx="2" ry="2.7"/><ellipse cx="14" cy="5.5" rx="2" ry="2.7"/><ellipse cx="19" cy="9" rx="2" ry="2.7"/></svg><svg viewBox="0 0 24 24"><path d="M7 17c0-3 3-6 5-6s5 3 5 6c0 3-3 3-5 2-2 1-5 1-5-2Z"/><ellipse cx="5" cy="9" rx="2" ry="2.7"/><ellipse cx="10" cy="5.5" rx="2" ry="2.7"/><ellipse cx="14" cy="5.5" rx="2" ry="2.7"/><ellipse cx="19" cy="9" rx="2" ry="2.7"/></svg><svg viewBox="0 0 24 24"><path d="M7 17c0-3 3-6 5-6s5 3 5 6c0 3-3 3-5 2-2 1-5 1-5-2Z"/><ellipse cx="5" cy="9" rx="2" ry="2.7"/><ellipse cx="10" cy="5.5" rx="2" ry="2.7"/><ellipse cx="14" cy="5.5" rx="2" ry="2.7"/><ellipse cx="19" cy="9" rx="2" ry="2.7"/></svg><svg viewBox="0 0 24 24"><path d="M7 17c0-3 3-6 5-6s5 3 5 6c0 3-3 3-5 2-2 1-5 1-5-2Z"/><ellipse cx="5" cy="9" rx="2" ry="2.7"/><ellipse cx="10" cy="5.5" rx="2" ry="2.7"/><ellipse cx="14" cy="5.5" rx="2" ry="2.7"/><ellipse cx="19" cy="9" rx="2" ry="2.7"/></svg></div>
+  <p class="splash-status" id="splashStatus" aria-live="polite">奶团正在醒来…</p>
+</div>
+<svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-paw" viewBox="0 0 24 24"><path d="M7 17c0-3 3-6 5-6s5 3 5 6c0 3-3 3-5 2-2 1-5 1-5-2Z"/><ellipse cx="5" cy="9" rx="2" ry="2.7"/><ellipse cx="10" cy="5.5" rx="2" ry="2.7"/><ellipse cx="15" cy="5.5" rx="2" ry="2.7"/><ellipse cx="19.5" cy="10" rx="2" ry="2.7"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M12 21V10M12 14C5 14 3 10 3 5c6 0 9 3 9 9ZM12 10c0-5 3-7 9-7 0 6-4 9-9 9"/></symbol>
+  <symbol id="i-fish" viewBox="0 0 24 24"><path d="M2 12c4-5 9-6 14-3l5-3v12l-5-3c-5 3-10 2-14-3Z"/><circle cx="6.5" cy="11" r=".7" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-gem" viewBox="0 0 24 24"><path d="m3 8 4-5h10l4 5-9 13ZM3 8h18M7 3l5 18 5-18M7 8l5-5 5 5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21S2 15 2 8a5 5 0 0 1 10-1A5 5 0 0 1 22 8c0 7-10 13-10 13Z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M18 3A9 9 0 1 0 21 18 8 8 0 0 1 18 3Z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4.5"/><path d="M3 22c0-6 3-10 9-10s9 4 9 10Z"/></symbol>
+  <symbol id="i-game" viewBox="0 0 24 24"><path d="M7 6h10c3 0 4 2 5 7 1 4-2 6-5 3l-2-2H9l-2 2c-3 3-6 1-5-3 1-5 2-7 5-7Z"/><path d="M7 9v5M4.5 11.5h5M16 10h.01M19 13h.01"/></symbol>
+  <symbol id="i-shop" viewBox="0 0 24 24"><path d="M3 9 5 3h14l2 6M3 9c0 4 5 4 6 0 0 4 6 4 6 0 1 4 6 4 6 0ZM4 12v9h16v-9M10 21v-6h5v6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 3h14v19H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM5 18h14"/><path d="m12 6 1 2.5 2.5.3-1.9 1.8.6 2.5-2.2-1.3-2.2 1.3.6-2.5-1.9-1.8 2.5-.3Z"/></symbol>
+  <symbol id="i-sofa" viewBox="0 0 24 24"><path d="M5 10V7c0-3 2-4 7-4s7 1 7 4v3M5 16h14M5 10c-4-3-4 6-2 7v3h18v-3c2-1 2-10-2-7v6M5 10v6M5 20v2M19 20v2"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 7h5l2-3h4l2 3h5v14H3Z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 6"/></symbol>
+  <symbol id="i-flower" viewBox="0 0 24 24"><circle cx="12" cy="10" r="2.6"/><path d="M12 7.4C11 4.5 13 3 14.6 4.4c1.6 1.4.6 3.6-1.6 4.1M14.4 9.2c2.9-.6 4.4 1.5 3.1 3-1.3 1.6-3.5.8-4.2-1.2M13.2 12.5c.9 2.8-1 4.4-2.7 3.2-1.6-1.2-1-3.4.9-4.2M10.4 11.6c-2.8.9-4.5-1-3.3-2.7 1.2-1.6 3.4-1 4.2.9M12 12.6V21M12 18c-2.6-.2-4.2-1.4-4.6-3.2 2.2-.2 3.8.9 4.6 3.2Z"/></symbol>
+  <symbol id="i-fullscreen" viewBox="0 0 24 24"><path d="M9 3H3v6M15 3h6v6M3 15v6h6M21 15v6h-6"/></symbol>
+</svg>
+<div class="app house-app" id="app" data-page="home">
+<main class="home-view" id="homeView" aria-label="奶团的窝">
+  <header class="top">
+    <h1 class="sr-only">奶团小屋</h1>
+    <div class="top-r">
+      <button class="coins" id="coins" type="button" aria-label="小鱼干，点开装扮小铺"><svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 16c4-7 12-9 18-4l6-4v16l-6-4c-6 5-14 3-18-4z" fill="#8fa3bf"/></svg><b id="coinNum">0</b></button>
+      <button class="gem-chip" id="gemChip" type="button" aria-label="成长宝石，查看生活打卡"><svg class="ui-icon"><use href="#i-gem"/></svg><b id="gemNum">0</b></button>
+    </div>
+  </header>
+  <button class="paw-toggle" id="pawToggle" type="button" aria-label="打开爪爪菜单" aria-expanded="false" aria-controls="pawMenu"><svg class="ui-icon"><use href="#i-paw"/></svg></button>
+  <nav class="paw-menu" id="pawMenu" aria-label="小屋菜单" hidden>
+    <button type="button" data-house-action="profile"><svg class="ui-icon"><use href="#i-user"/></svg><span>我的</span></button>
+    <button type="button" data-house-action="games"><svg class="ui-icon"><use href="#i-game"/></svg><span>游戏</span></button>
+    <button type="button" data-house-action="shop"><svg class="ui-icon"><use href="#i-shop"/></svg><span>小铺</span></button>
+    <button type="button" data-house-action="book"><svg class="ui-icon"><use href="#i-book"/></svg><span>图鉴</span></button>
+    <button type="button" data-house-action="acc"><svg class="ui-icon"><use href="#i-flower"/></svg><span>饰品</span></button>
+    <button type="button" data-house-action="arrange"><svg class="ui-icon"><use href="#i-sofa"/></svg><span>布置</span></button>
+    <button type="button" id="houseFullscreen" data-house-action="fullscreen" aria-pressed="false"><svg class="ui-icon"><use href="#i-fullscreen"/></svg><span>全屏</span></button>
+  </nav>
+  <div class="quick-stats" id="quickStats" aria-label="照顾奶团">
+    <button class="stat-ring hunger-ring" id="quickFeed" type="button" aria-label="喂小鱼"><svg class="ring-dial" viewBox="0 0 40 40" aria-hidden="true"><circle class="ring-track" cx="20" cy="20" r="16"/><circle class="ring-progress" cx="20" cy="20" r="16"/></svg><svg class="ui-icon"><use href="#i-fish"/></svg></button>
+    <button class="stat-ring mood-ring" id="quickPet" type="button" aria-label="摸摸奶团"><svg class="ring-dial" viewBox="0 0 40 40" aria-hidden="true"><circle class="ring-track" cx="20" cy="20" r="16"/><circle class="ring-progress" cx="20" cy="20" r="16"/></svg><svg class="ui-icon"><use href="#i-heart"/></svg></button>
+    <button class="stat-ring energy-ring" id="quickSleep" type="button" aria-label="让奶团睡觉"><svg class="ring-dial" viewBox="0 0 40 40" aria-hidden="true"><circle class="ring-track" cx="20" cy="20" r="16"/><circle class="ring-progress" cx="20" cy="20" r="16"/></svg><svg class="ui-icon"><use href="#i-moon"/></svg></button>
+  </div>
+
+  <section class="stage" id="stage" data-wall="dots" aria-label="奶团的房间">
+    <div class="room-scene" id="roomScene">
+    <div class="window" id="window" data-win="plain" aria-hidden="true"><div class="cloud"></div></div>
+    <div class="floor" aria-hidden="true"></div>
+    <div class="rug" id="rug" data-rug="pink" aria-hidden="true"></div>
+    <div class="props" id="props" aria-hidden="true"></div>
+
+    <div class="cat-ground-shadow" id="catShadow" aria-hidden="true"></div>
+    <div class="catbox" id="catbox">
+      <button class="catbtn" id="catbtn" type="button" aria-label="摸摸奶团：耳朵、鼻尖、下巴、小爪；长按脸颊蹭蹭，拖动抱起" title="键盘：Enter 摸头 · E 耳朵 · N 鼻尖 · C 下巴 · P 牵爪 · R 蹭蹭">
+        <div class="cat" id="cat" data-pose="sit"><img id="catimg" alt="" src=""></div>
+      </button>
+      <div class="zzz" id="zzz" hidden aria-hidden="true"><span>Z</span><span>z</span><span>z</span></div>
+    </div>
+
+    </div>
+    <div class="bubble" id="bubble" role="status" aria-live="polite">点点我，可以摸摸</div>
+
+    <div class="sg" id="sg" hidden>
+      <canvas id="sgCanvas" aria-label="堆纸箱，点一下放下纸箱"></canvas>
+      <img id="sgCat" class="sg-cat" alt="" draggable="false">
+      <div class="hs-bar"><span class="hs-score" id="sgScore">0 层</span><button class="hs-quit" id="sgQuit" type="button">不玩了</button></div>
+      <div class="sg-hint" id="sgHint"><span>点一下，把纸箱放下去</span></div>
+      <div class="sg-over" id="sgOver" hidden>
+        <div class="sg-card" role="dialog" aria-label="本局结果">
+          <h2 id="sgTitle">堆了 0 层</h2>
+          <p id="sgBest">最高 0 层</p>
+          <div class="rew" id="sgRew">小鱼干 +0</div>
+          <div class="sg-btns"><button id="sgBack" type="button">回房间</button><button id="sgAgain" class="main" type="button">再来一次</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cq" id="cq" hidden></div>
+    <div class="ml" id="ml" hidden></div>
+
+    <div class="hs" id="hs" hidden>
+      <div class="hs-bar">
+        <span class="hs-score" id="rhScore">0</span>
+        <span class="rh-lives" id="rhLives" role="img" aria-label="剩余生命"></span>
+        <button class="hs-quit" id="hsQuit" type="button">不玩了</button>
+      </div>
+      <div class="rh-prog" aria-hidden="true"><div class="rh-fill" id="rhFill"></div></div>
+      <div class="rh-judge" id="rhJudge" role="status"></div>
+      <div class="slots" id="slots" data-rows="1"></div>
+      <div class="rh-info"><span id="rhBpm">BPM 84</span><span id="rhCombo">连击 0</span></div>
+
+      <div class="sg-over" id="rhIntro" hidden>
+        <div class="sg-card" role="dialog" aria-label="躲猫猫的玩法">
+          <h2>躲猫猫</h2>
+          <p>跟着节拍，在奶团从箱子里探出头的那一拍点它。箱子会越来越多，节奏会越来越快。</p>
+          <p><b>灰灰的纸片假猫</b>是陷阱，别点！点错或者让真猫溜走，都会掉一颗心。</p>
+          <p>前几拍是热身，真猫溜走不扣心；连击每满 15 次，回一颗心。</p>
+          <p id="rhBest">最高分 0</p>
+          <div class="sg-btns"><button id="rhSound" type="button">音效：开</button><button id="rhGo" class="main" type="button">开始</button></div>
+          <button class="hs-quit" id="rhIntroQuit" type="button">回房间</button>
+        </div>
+      </div>
+      <div class="sg-over" id="rhOver" hidden>
+        <div class="sg-card" role="dialog" aria-label="本局结果">
+          <h2 id="rhTitle">等级 S</h2>
+          <p id="rhSub"></p>
+          <p id="rhStats"></p>
+          <div class="rew" id="rhRew">小鱼干 +0</div>
+          <div class="sg-btns"><button id="rhBack" type="button">回房间</button><button id="rhAgain" class="main" type="button">再来一次</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="room-tools" id="roomTools" aria-label="家具布置">
+    <div class="room-editor" id="roomEditTools" hidden>
+      <button id="roomResetItem" type="button" title="恢复这件家具的位置、大小和朝向">重置</button>
+      <button id="roomArrange" class="room-arrange" type="button" aria-pressed="false">确定</button>
+      <button id="roomDelete" class="room-delete" type="button" title="将家具收回小铺，保留已购买的家具">删除</button>
+    </div>
+    <p id="roomTip" class="room-tip" role="status">点选家具，再拖动或双指缩放</p>
+    <div hidden>
+    <div class="room-tool-row">
+      <span class="room-title">窝</span>
+      <div class="room-zoom" role="group" aria-label="房间缩放">
+        <button id="roomZoomOut" type="button" aria-label="缩小房间">−</button>
+        <output id="roomZoomLabel" aria-label="当前缩放">100%</output>
+        <button id="roomZoomIn" type="button" aria-label="放大房间">＋</button>
+      </div>
+      <button id="roomResetView" type="button">回正</button>
+    </div>
+    <div>
+      <div class="room-edit-row">
+      <select id="roomItem" aria-label="选择要摆放的家具"></select>
+      <button id="roomCancel" type="button">取消</button>
+      </div>
+      <div class="room-size-row" role="group" aria-label="家具大小">
+        <label for="roomSize">大小 <output id="roomSizeLabel" for="roomSize">100%</output></label>
+        <button id="roomSmaller" type="button" aria-label="缩小家具">−</button>
+        <input id="roomSize" type="range" min="50" max="200" step="5" value="100" aria-label="家具大小百分比">
+        <button id="roomBigger" type="button" aria-label="放大家具">＋</button>
+      </div>
+      <div class="room-edit-row room-transform-row">
+        <div class="room-nudge" role="group" aria-label="微调家具位置">
+          <button id="roomLeft" type="button" aria-label="家具向左">←</button>
+          <button id="roomRight" type="button" aria-label="家具向右">→</button>
+          <button id="roomUp" type="button" aria-label="家具向上">↑</button>
+          <button id="roomDown" type="button" aria-label="家具向下">↓</button>
+        </div>
+        <button id="roomFlipX" type="button" aria-pressed="false">左右镜像</button>
+        <button id="roomFlipY" type="button" aria-pressed="false">上下镜像</button>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <section class="meters" id="meters" aria-label="奶团的状态">
+    <div class="meter" id="m-hunger" style="--c: var(--sun)"><div class="name"><b>饱腹</b><span class="num">0</span></div><div class="track"><div class="fill"></div></div></div>
+    <div class="meter" id="m-mood" style="--c: var(--heart)"><div class="name"><b>心情</b><span class="num">0</span></div><div class="track"><div class="fill"></div></div></div>
+    <div class="meter" id="m-energy" style="--c: var(--fish)"><div class="name"><b>精神</b><span class="num">0</span></div><div class="track"><div class="fill"></div></div></div>
+  </section>
+
+  <section class="actions" id="actions" aria-label="照顾奶团">
+    <button class="act" id="btnFeed" type="button">
+      <svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 16c4-7 12-9 18-4l6-4v16l-6-4c-6 5-14 3-18-4z" fill="#8fa3bf"/><circle cx="9" cy="14" r="1.2" fill="#54392f" stroke="none"/><path d="M15 12v8" stroke-width="1.6"/></svg>
+      喂小鱼
+    </button>
+    <button class="act" id="btnSleep" type="button" aria-pressed="false">
+      <svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+        <path d="M22 5.5A11 11 0 1 0 26.5 22 9 9 0 0 1 22 5.5z" fill="#f4b04a"/></svg>
+      <span id="sleepLabel">睡觉</span>
+    </button>
+    <button class="act" id="btnHide" type="button">
+      <svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 28V14a10 10 0 0 1 20 0v14z" fill="#e7b48a"/><path d="M16 28V14" stroke-width="1.6"/><circle cx="12" cy="17" r="1.3" fill="#54392f" stroke="none"/></svg>
+      躲猫猫
+    </button>
+    <button class="act" id="btnStack" type="button">
+      <svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3.5" width="14" height="8" rx="1.5" fill="#e3b98f"/><rect x="5" y="11.5" width="16" height="8" rx="1.5" fill="#dcae82"/><rect x="11" y="19.5" width="16" height="8" rx="1.5" fill="#d4a173"/></svg>
+      堆纸箱
+    </button>
+    <button class="act" id="btnCake" type="button">
+      <svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M4 24V14l16-7 8 7v10z" fill="#f7d0cc"/><path d="M4 14l16-7 8 7-16 6z" fill="#fffaf2"/><path d="M12 20v10M4 24h24" stroke-width="1.6"/><circle cx="18" cy="9" r="2" fill="#e2897d"/></svg>
+      蛋糕店
+    </button>
+    <button class="act" id="btnLion" type="button">合成大狮子</button>
+  </section>
+  <button class="shopbtn" id="btnShop" type="button">
+    <svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 6.5 4h19L28 12z" fill="#e2897d"/><path d="M4 12c0 2.2 2 3.5 4 3.5s4-1.300 4-3.5c0 2.200 2 3.500 4 3.500s4-1.300 4-3.500c0 2.200 2 3.500 4 3.500s4-1.300 4-3.500" fill="#fffaf2"/><path d="M6 15.500V28h20V15.500"/><rect x="13" y="19" width="6" height="9" fill="#f4b04a"/></svg>
+    装扮小铺<small>四季新居 · 家具、摆件与房间</small>
+  </button>
+
+  <section class="shop" id="shop" hidden aria-label="装扮小铺">
+    <div class="shop-head">
+      <h2>装扮小铺</h2>
+      <span class="coins" style="cursor:default"><svg viewBox="0 0 32 32" fill="none" stroke="#54392f" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 16c4-7 12-9 18-4l6-4v16l-6-4c-6 5-14 3-18-4z" fill="#8fa3bf"/></svg><b id="shopCoinNum">0</b></span>
+      <button class="hs-quit" id="shopClose" type="button">回房间</button>
+    </div>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="buy">
+      <div class="buy-info"><b id="buyName">选一件试试</b><span id="buyDesc">点上面的东西，先在房间里看看效果</span></div>
+      <button class="wishbtn" id="wishBtn" type="button" aria-pressed="false" hidden></button>
+      <button class="buybtn" id="buyBtn" type="button" disabled>—</button>
+    </div>
+    <div class="items" id="items"></div>
+  </section>
+
+  <button class="linkbtn" id="btnSave" type="button">存档：导出 / 导入</button>
+  <p class="hint" id="hint">点家具，奶团会自己走过去：到窗下看风景、在软垫踩奶、凑近其他家具闻闻。闲着会走走停停，摸摸或提起就会停下陪你~</p>
+</main>
+
+<main class="life-view paper-view" id="lifeView" aria-labelledby="lifeTitle" hidden>
+  <header class="life-heading"><h1 id="lifeTitle">生活</h1><time id="lifeDate"></time></header>
+  <div class="journal-tools">
+    <button id="journalStudyOpen" type="button"><svg class="ui-icon"><use href="#i-book"/></svg><span>奶团自习室<small id="journalStudyNote">陪你专注一小会儿</small></span></button>
+    <button id="journalPlansOpen" type="button" aria-expanded="false" aria-controls="journalPlans"><svg class="ui-icon"><use href="#i-check"/></svg><span>今日小计划<small id="journalPlanCount">慢慢来就好</small></span></button>
+  </div>
+  <div class="journal-daybar"><div><h2 id="journalDayTitle">今天</h2><time id="journalDate"></time></div><button id="journalCalendarOpen" type="button" aria-expanded="false" aria-controls="journalCalendar">翻翻日历 <svg class="ui-icon"><use href="#i-book"/></svg></button></div>
+  <p id="journalDayReview" class="journal-review">留一点空白也很好。</p>
+  <section class="paper-card calendar-card journal-calendar-card" id="journalCalendar" hidden aria-label="生活日历">
+    <div class="section-line"><span id="calendarMonth">9月</span><button class="text-button" id="calendarToggle" type="button" aria-expanded="false" aria-controls="calendarExpanded">展开日历 <span aria-hidden="true">›</span></button></div>
+    <div class="week-labels" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+    <div class="calendar-days" id="calendarWeek"></div>
+    <div id="calendarExpanded" hidden>
+      <div class="month-nav"><button id="calendarPrev" class="icon-button" type="button" aria-label="上个月">‹</button><b id="expandedMonth"></b><button id="calendarNext" class="icon-button" type="button" aria-label="下个月">›</button></div>
+      <div class="calendar-days full-month" id="calendarGrid"></div>
+    </div>
+    <button class="text-button back-today" id="calendarToday" type="button" hidden>回到今天</button>
+  </section>
+  <section class="paper-card checkin-card" hidden aria-labelledby="checkinTitle">
+    <h2 id="checkinTitle">今日打卡</h2>
+    <div class="checkin-grid">
+      <button class="word-checkin" id="wordCheckin" type="button"><img src="assets/shy.webp" alt="" draggable="false"><span><b>单词</b><small id="wordStatus">学一点，进步一点</small></span></button>
+      <button class="food-checkin" id="foodCheckin" type="button"><img id="foodThumbnail" alt="" hidden><span class="food-caption"><svg class="ui-icon"><use href="#i-camera"/></svg><b>饮食</b><small id="foodStatus">拍下今天吃了什么</small></span></button>
+    </div>
+  </section>
+  <section class="paper-card focus-card" hidden aria-labelledby="focusTitle">
+    <div><h2 id="focusTitle">自习室</h2><output id="focusTime" aria-label="专注剩余时间">25:00</output><p id="focusNote">奶团陪你一起专注</p></div>
+    <div class="focus-actions"><button class="primary-button" id="focusToggle" type="button">开始专注</button><button class="text-button" id="focusReset" type="button" hidden>重新计时</button></div>
+  </section>
+  <section class="paper-card todo-card" id="journalPlans" hidden aria-labelledby="todoTitle">
+    <div class="section-line"><h2 id="todoTitle">待办</h2><button class="text-button" id="todoAdd" type="button"><svg class="ui-icon"><use href="#i-plus"/></svg>添加</button></div>
+    <form class="todo-form" id="todoForm" hidden><input id="todoInput" aria-label="新的待办" placeholder="想完成的一件小事" maxlength="120" autocomplete="off" required><button type="submit" class="icon-button" aria-label="保存待办"><svg class="ui-icon"><use href="#i-check"/></svg></button><button type="button" id="todoCancel" class="icon-button" aria-label="取消添加"><svg class="ui-icon"><use href="#i-close"/></svg></button></form>
+    <ul class="todo-list" id="todoList"></ul><p class="empty-note" id="todoEmpty" hidden>今天留一点时间给自己吧。</p>
+  </section>
+  <div class="journal-tabs" aria-label="记录视图"><button type="button" id="journalNotesTab" aria-pressed="true">日常记录</button><button type="button" id="journalPhotosTab" aria-pressed="false">照片</button><button type="button" id="journalToday" hidden>回到今天</button></div>
+  <div id="journalList" class="journal-list"></div><div id="journalAlbum" class="journal-album" hidden></div>
+  <button id="journalAdd" class="journal-add" type="button"><svg class="ui-icon"><use href="#i-plus"/></svg>记一点今天</button>
+  <div class="journal-secondary"><button id="journalWordOpen" type="button">单词打卡</button><button id="journalUndo" type="button" hidden>撤销删除</button></div>
+  <p id="lifeStatus" class="life-status" role="status" aria-live="polite"></p>
+</main>
+
+<main class="games-view paper-view" id="gamesView" aria-labelledby="gamesTitle" hidden>
+  <header class="page-heading"><button class="back-home" data-house-action="home" type="button"><svg class="ui-icon"><use href="#i-back"/></svg>回窝</button><h1 id="gamesTitle">游戏</h1><span class="game-coins"><svg class="ui-icon"><use href="#i-fish"/></svg><b id="gamesCoinNum">0</b></span></header>
+  <div class="game-grid">
+    <button class="game-tile" data-play="btnHide" type="button"><span class="game-art peek-art"><img src="assets/peek.webp" alt="" draggable="false"></span><span class="game-description"><b>躲猫猫</b><small>跟着节拍找奶团</small></span></button>
+    <button class="game-tile" data-play="btnStack" type="button"><span class="game-art box-art"><img src="assets/box.webp" alt="" draggable="false"></span><span class="game-description"><b>堆纸箱</b><small>一层一层往上叠</small></span></button>
+    <button class="game-tile cake-tile" data-play="btnCake" type="button"><span class="game-art cake-art"><img src="assets/cats/cat0.webp" alt="" draggable="false"></span><span class="game-description"><b>蛋糕店 <em>新</em></b><small>40 关排队谜题，后排藏着新朋友</small></span></button>
+    <button class="game-tile cake-tile lion-tile" data-play="btnLion" type="button"><span class="game-art lion-art"><img src="assets/animals/animal11.webp" alt="" draggable="false"></span><span class="game-description"><b>合成大狮子 <em>新</em></b><small>一样的碰在一起，变成更大的</small></span></button>
+  </div>
+  <section class="coming-section" aria-labelledby="comingTitle"><h2 id="comingTitle">还在做的小游戏</h2><div class="coming-grid"><div><b>喵了个喵</b><small>制作中</small></div><div><b>数独喵</b><small>制作中</small></div><div><b>逻辑喵</b><small>制作中</small></div></div></section>
+  <footer class="games-footer"><img src="assets/shy.webp" alt="偷笑的奶团" draggable="false"><p>新游戏在路上啦～</p></footer>
+</main>
+
+<nav class="bottom-nav" id="bottomNav" aria-label="主要页面">
+  <button type="button" id="navHome" data-house-action="home" aria-current="page"><svg class="ui-icon"><use href="#i-home"/></svg>窝</button>
+  <button type="button" id="navLife" data-house-action="life"><svg class="ui-icon"><use href="#i-leaf"/></svg>生活</button>
+  <button type="button" id="navProfile" data-house-action="profile"><svg class="ui-icon"><use href="#i-user"/></svg>我的</button>
+</nav>
+
+<main class="paper-view journal-profile" id="profileView" aria-labelledby="profileTitle" hidden>
+  <header class="journal-profile-heading"><div><h1 id="profileTitle">我的</h1><p id="together">已陪伴 0 分钟</p></div><img src="assets/shy.webp" alt="陪着你的奶团" draggable="false"></header>
+  <div class="journal-overview" aria-label="生活记录总览"><div><b id="profileRecordCount">0</b><span>日常记录</span></div><div><b id="profileRecordDays">0</b><span>留下记录的天数</span></div><div><b id="profilePhotoCount">0</b><span>照片</span></div></div>
+  <section aria-labelledby="journalHistoryTitle"><h2 id="journalHistoryTitle" class="journal-history-title">日子慢慢留下来</h2><div class="journal-period"><button id="journalRecent" type="button" aria-pressed="true">近三个月</button><button id="journalYear" type="button" aria-pressed="false">今年</button></div><div id="journalHeatmap"></div><div class="journal-heat-legend" aria-hidden="true">少 <i class="journal-swatch"></i><i class="journal-swatch" data-level="1"></i><i class="journal-swatch" data-level="2"></i><i class="journal-swatch" data-level="3"></i><i class="journal-swatch" data-level="4"></i> 多</div><p class="journal-heat-hint">每格是一天，颜色随日常记录数加深。点一下，回看那天。</p></section>
+  <button id="profileAlbum" class="journal-profile-row" type="button"><span><svg class="ui-icon"><use href="#i-camera"/></svg>日期相册</span><span aria-hidden="true">›</span></button>
+  <button id="profileSave" class="journal-profile-row" type="button"><span><svg class="ui-icon"><use href="#i-book"/></svg>完整备份 · 导出 / 恢复</span><span aria-hidden="true">›</span></button>
+  <details class="journal-settings"><summary>小屋与声音</summary><div class="profile-stats"><span><b id="profileFish">0</b>小鱼干</span><span><b id="profileGems">0</b>成长宝石</span><span><b id="profileFocus">0</b>专注分钟</span></div>
+  <section class="profile-audio" aria-label="声音设置">
+    <button class="secondary-button" id="profileSound" type="button" aria-pressed="true">音效：开</button>
+    <label class="profile-slider" for="profileVolume"><span>音效音量</span><output id="profileVolumeValue" for="profileVolume">80%</output><input id="profileVolume" type="range" min="0" max="100" step="5" value="80" aria-label="音效音量"></label>
+    <button class="secondary-button" id="profileMusic" type="button" aria-pressed="true">背景音乐：开</button>
+    <label class="profile-slider" for="profileMusicVolume"><span>音乐音量</span><output id="profileMusicVolumeValue" for="profileMusicVolume">60%</output><input id="profileMusicVolume" type="range" min="0" max="100" step="5" value="60" aria-label="背景音乐音量"></label>
+    <p class="profile-help" id="profileBgmTrack">音乐会跟着当地时间变换</p>
+  </section>
+  <p class="profile-help">右上角的小鱼、爱心、月亮，分别可以喂食、摸摸和哄睡。轻点奶团也会有回应哦。</p></details>
+  <p class="local-note">记录和照片保存在这台设备的浏览器里，不会上传。<br>换设备前，记得导出完整备份。<br>小屋会匿名统计各页面的访问次数和停留时间，用来把它变得更好。</p>
+</main>
+
+<dialog class="house-dialog" id="wordDialog" aria-labelledby="wordTitle">
+  <button class="dialog-close icon-button" data-close-dialog type="button" aria-label="关闭单词打卡"><svg class="ui-icon"><use href="#i-close"/></svg></button>
+  <img class="dialog-cat" src="assets/shy.webp" alt=""><h2 id="wordTitle">今天也有一点进步</h2><p>记录今天学过的单词，奶团陪你一起记着。</p>
+  <form id="wordForm"><label for="wordCount">今天学了多少个单词？</label><input id="wordCount" type="number" min="1" max="9999" value="50" required><button class="primary-button" type="submit">完成打卡</button></form>
+  <p id="wordMessage" class="form-message" role="status"></p>
+</dialog>
+
+<dialog class="house-dialog" id="foodDialog" aria-labelledby="foodTitle">
+  <button class="dialog-close icon-button" data-close-dialog type="button" aria-label="关闭饮食记录"><svg class="ui-icon"><use href="#i-close"/></svg></button>
+  <h2 id="foodTitle">好好吃饭的一天</h2><p>留下一张照片，或写下今天的小美味。</p>
+  <form id="foodForm"><label class="photo-picker" for="foodFile"><img id="foodPreview" alt="饮食照片预览" hidden><span><svg class="ui-icon"><use href="#i-camera"/></svg>选择照片</span></label><input class="file-input" id="foodFile" type="file" accept="image/*"><label for="foodNote">今天吃了什么</label><textarea id="foodNote" maxlength="240" rows="3" placeholder="比如：热乎乎的番茄鸡蛋面"></textarea><button class="primary-button" id="foodSubmit" type="submit">保存饮食记录</button></form>
+  <p id="foodMessage" class="form-message" role="status"></p><p class="local-note">照片只保存在本机，不会上传</p>
+</dialog>
+<dialog class="journal-entry-dialog" id="journalEntryDialog" aria-labelledby="journalEntryTitle">
+  <button id="journalEntryClose" class="dialog-close icon-button" type="button" aria-label="关闭记录编辑"><svg class="ui-icon"><use href="#i-close"/></svg></button>
+  <h2 id="journalEntryTitle">留下一点今天</h2><form id="journalEntryForm"><label class="journal-entry-date" for="journalEntryDate">这一天<input id="journalEntryDate" type="date" required></label><label class="sr-only" for="journalEntryText">日常记录</label><textarea id="journalEntryText" rows="4" maxlength="4000" placeholder="今天有些什么，想留下来？"></textarea><div class="journal-entry-preview"><img id="journalEntryPreview" alt="准备保存的照片" hidden><button id="journalRemovePhoto" type="button" aria-label="移除照片" hidden><svg class="ui-icon"><use href="#i-close"/></svg></button></div><input id="journalEntryFile" class="file-input" type="file" accept="image/*"><div class="journal-entry-actions"><button id="journalPickPhoto" type="button"><svg class="ui-icon"><use href="#i-camera"/></svg>留张照片</button><button id="journalEntrySave" class="primary-button" type="submit">收好这一刻</button></div><p id="journalEntryMessage" class="form-message" role="status"></p></form><p class="local-note" id="journalEntryGem" hidden>今天的第一条日常，奶团会送你一颗成长宝石。</p><p class="local-note">照片只留在本机，不会上传。</p>
+</dialog>
+<dialog class="house-dialog journal-menu" id="journalRecordMenu" aria-labelledby="journalMenuTitle"><button class="dialog-close icon-button" type="button" data-close-dialog aria-label="关闭记录选项"><svg class="ui-icon"><use href="#i-close"/></svg></button><h2 id="journalMenuTitle">这一条日常</h2><button id="journalEdit" type="button">修改记录</button><button id="journalDelete" type="button">删除记录</button></dialog>
+<dialog class="house-dialog journal-photo-dialog" id="journalPhotoDialog" aria-label="照片详情"><button class="dialog-close icon-button" type="button" data-close-dialog aria-label="关闭照片"><svg class="ui-icon"><use href="#i-close"/></svg></button><img id="journalPhotoFull" alt="日常照片"><p id="journalPhotoCaption"></p></dialog>
+<dialog class="house-dialog acc-dialog" id="accDialog" aria-labelledby="accTitle">
+  <button class="dialog-close icon-button" data-close-dialog type="button" aria-label="关闭饰品"><svg class="ui-icon"><use href="#i-close"/></svg></button>
+  <h2 id="accTitle">奶团的饰品</h2>
+  <p id="accIntro">点一下，就能给奶团戴上或者摘下来。</p>
+  <div class="acc-list" id="accList"></div>
+</dialog>
+
+<div class="house-toast" id="houseToast" role="status" aria-live="polite" hidden></div>
+
+  <div class="modal" id="saveModal" hidden role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+    <div class="modal-card">
+      <h2 id="saveTitle">把日子收好</h2>
+      <p>完整备份包含小屋、游戏、计划、日常记录和照片。换设备时，选这份文件恢复就好。</p>
+      <div class="backup-actions"><button id="saveCopy" type="button">导出完整备份</button><button id="backupPick" type="button">选择备份文件</button><button id="backupRestore" type="button" hidden>确认覆盖并恢复</button></div><input id="backupFile" class="file-input" type="file" accept=".json,application/json">
+      <details class="backup-legacy"><summary>恢复以前的存档码</summary><label class="sr-only" for="saveText">旧存档码</label><textarea id="saveText" rows="4" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="粘贴以 NT1: 开头的旧存档码"></textarea><button id="saveLoad" class="secondary-button" type="button">导入旧存档码</button></details>
+      <p class="modal-msg" id="saveMsg" role="status"></p>
+      <button class="hs-quit" id="saveClose" type="button">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="levels.js?v=challenge-20261003-v2"></script>
+<script src="cq-challenge.js?v=challenge-20261003-v2"></script>
+<script src="decor-catalog.js?v=depth-20260929"></script>
+<script src="walking.js?v=walk-20260929"></script>
+<script src="room.js?v=layer-20261003"></script>
+<script src="sound.js?v=jelly-20261004"></script>
+<script src="bgm.js?v=games-music-20261003"></script>
+<script src="accessory-slots.js?v=acc-20261004"></script>
+<script src="game.js?v=forgive-20261007"></script>
+<script src="queue.js?v=wish-20261004"></script>
+<script src="lion-physics.js?v=lion-20261004e"></script>
+<script src="lion.js?v=lion-20261004e"></script>
+<script src="photo-crop.js?v=crop-20261004"></script>
+<script src="life.js?v=gem-20261004"></script>
+<script src="photo-store.js?v=journal-20261003"></script>
+<script src="journal-state.js?v=journal-20261003"></script>
+<script src="journal.js?v=gem-20261004"></script>
+<script src="planner-state.js?v=house-20261003"></script>
+<script src="study-ambience.js?v=immersive-20260929"></script>
+<script src="planner.js?v=journal-20261003"></script>
+<script src="backup.js?v=journal-20261003"></script>
+<script src="house.js?v=acc-20261004"></script>
+<script src="splash.js?v=splash-20261003"></script>
+<div id="naituanPreviewBar" aria-hidden="true" style="position:fixed;top:0;left:0;right:0;z-index:2147483647;pointer-events:none;box-sizing:border-box;padding:env(safe-area-inset-top,0px) 8px 0;background:#c62828;color:#fff;font:600 12px/18px -apple-system,system-ui,'PingFang SC',sans-serif;text-align:center;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 3px rgba(0,0,0,.25)">预览版 · hide-seek-forgiveness</div>
+</body>
+</html>

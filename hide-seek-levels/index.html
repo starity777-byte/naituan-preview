@@ -2,17 +2,16 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<script>/* naituan-preview: 存档隔离保险 —— 所有存储键都加前缀，禁止注册 Service Worker */
-(function(){var P="preview:hide-seek-levels:";
-function k(x){x=String(x);return x.indexOf(P)===0?x:P+x;}
+<meta name="robots" content="noindex">
+<script>/* naituan-preview 运行时保险：漏网的存储名也自动加 -preview 后缀；禁止注册 Service Worker */
+(function(){var X='-preview';function k(n){n=String(n);return n.indexOf(X)>=0?n:n+X;}
 try{var S=Storage.prototype,g=S.getItem,s=S.setItem,r=S.removeItem,kk=S.key;
-S.getItem=function(x){return g.call(this,k(x));};
-S.setItem=function(x,v){return s.call(this,k(x),v);};
-S.removeItem=function(x){return r.call(this,k(x));};
-S.clear=function(){for(var i=this.length-1;i>=0;i--){var n=kk.call(this,i);if(n&&n.indexOf(P)===0)r.call(this,n);}};}catch(e){}
+S.getItem=function(n){return g.call(this,k(n));};S.setItem=function(n,v){return s.call(this,k(n),v);};
+S.removeItem=function(n){return r.call(this,k(n));};
+S.clear=function(){for(var i=this.length-1;i>=0;i--){var n=kk.call(this,i);if(n&&n.indexOf(X)>=0)r.call(this,n);}};}catch(e){}
 try{if(window.indexedDB){var I=Object.getPrototypeOf(indexedDB),o=I.open,d=I.deleteDatabase;
-I.open=function(n,v){return v===undefined?o.call(this,k(n)):o.call(this,k(n),v);};
-I.deleteDatabase=function(n){return d.call(this,k(n));};}}catch(e){}
+I.open=function(n,v){return v===undefined?o.call(this,k(n)):o.call(this,k(n),v);};I.deleteDatabase=function(n){return d.call(this,k(n));};}}catch(e){}
+try{if(window.caches){var C=Object.getPrototypeOf(caches);['open','delete','has'].forEach(function(m){var f=C[m];C[m]=function(n){return f.call(this,k(n));};});}}catch(e){}
 try{if(navigator.serviceWorker){navigator.serviceWorker.register=function(){return Promise.reject(new Error('预览版不注册 Service Worker'));};}}catch(e){}
 })();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -21,7 +20,7 @@ try{if(navigator.serviceWorker){navigator.serviceWorker.register=function(){retu
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="奶团小屋·预览">
-<title>奶团小屋（预览：hide-seek-levels）</title>
+<title>奶团小屋（预览版 · hide-seek-levels）</title>
 <script src="stats.js?v=stats-20261003"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icon-192.png">
@@ -445,6 +444,6 @@ try{if(navigator.serviceWorker){navigator.serviceWorker.register=function(){retu
 <script src="backup.js?v=journal-20261003"></script>
 <script src="house.js?v=acc-20261004"></script>
 <script src="splash.js?v=splash-20261003"></script>
-<div id="naituanPreviewPill" aria-hidden="true" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 3px);left:3px;z-index:2147483647;pointer-events:none;font:10px/1.5 -apple-system,system-ui,sans-serif;color:#fff;background:rgba(60,40,30,.45);padding:0 6px;border-radius:999px;opacity:.85;max-width:60vw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">预览：hide-seek-levels</div>
+<div id="naituanPreviewBar" aria-hidden="true" style="position:fixed;top:0;left:0;right:0;z-index:2147483647;pointer-events:none;box-sizing:border-box;padding:env(safe-area-inset-top,0px) 8px 0;background:#c62828;color:#fff;font:600 12px/18px -apple-system,system-ui,'PingFang SC',sans-serif;text-align:center;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 3px rgba(0,0,0,.25)">预览版 · hide-seek-levels</div>
 </body>
 </html>

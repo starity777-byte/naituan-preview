@@ -1,5 +1,7 @@
 branch=hide-seek-levels
+pr=12
+title=躲猫猫改版：选关 + 固定谱子 + 预告 + 一眼能认的纸片猫
 commit=71df41aaddf0b07807828e93716ff95b8daeb220
 subject=躲猫猫改版：选关 + 固定谱子 + 预告 + 一眼能认的纸片猫
-pr=#12 躲猫猫改版：选关 + 固定谱子 + 预告 + 一眼能认的纸片猫
-built=2026-10-07 18:35 PT
+builder=3c17ec45fa15
+built=2026-10-07 18:37 PT

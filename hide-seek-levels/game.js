@@ -25,7 +25,7 @@
     peek: 'assets/peek.webp',
     peekc: 'assets/peekc.webp'
   }/*SPR:END*/;
-  var KEY = 'preview:hide-seek-levels:naituan-house-v1';
+  var KEY = 'naituan-house-v1-preview';
   var $ = function (s) { return document.querySelector(s); };
   var cat = $('#cat'), catimg = $('#catimg'), catBox = $('#catbox'), stage = $('#stage'), bubble = $('#bubble'), zzz = $('#zzz');
   var btnFeed = $('#btnFeed'), btnSleep = $('#btnSleep'), btnHide = $('#btnHide'), sleepLabel = $('#sleepLabel');

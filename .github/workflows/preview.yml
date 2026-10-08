@@ -1,0 +1,46 @@
+name: 更新分支预览
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # 每 10 分钟（GitHub 的定时任务可能晚几分钟）
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '全部重建（忽略已构建的提交）'
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths: ['scripts/**', '.github/workflows/**']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: preview-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: 根据打开中的 PR 生成/更新/删除预览
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force && '1' || '0' }}
+        run: bash scripts/build-preview.sh
+
+      - name: 有变化才提交推送
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "没有变化，不提交"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "自动更新预览（$(TZ=America/Los_Angeles date '+%Y-%m-%d %H:%M') PT）"
+          git push origin HEAD:main

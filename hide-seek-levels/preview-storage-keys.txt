@@ -1,2 +1,4 @@
-IndexedDB  naituan-life-photos-v1 -> preview:hide-seek-levels:naituan-life-photos-v1  (1 处)
-Storage    naituan-house-v1 -> preview:hide-seek-levels:naituan-house-v1  (1 处)
+# 存储名改动（文件:行 旧 -> 新）
+game.js:28: 'naituan-house-v1' -> 'naituan-house-v1-preview'
+photo-store.js:7: 'naituan-life-photos-v1' -> 'naituan-life-photos-v1-preview'
+（派生）game.js:130: KEY + '-backup'
